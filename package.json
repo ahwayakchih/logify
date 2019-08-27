@@ -1,0 +1,26 @@
+{
+  "name": "logify",
+  "version": "1.0.0",
+  "description": "Turn objects/values into JSON string safely, keep result easy on the eyes",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "tap-diff": "^0.1.1",
+    "tape": "^4.11.0",
+    "tape-catch": "^1.0.6"
+  },
+  "scripts": {
+    "test": "node test/index.js | tap-diff"
+  },
+  "keywords": [
+    "JSON",
+    "stringify",
+    "circular",
+    "reference"
+  ],
+  "author": "Marcin Konicki (https://ahwayakchih.neoni.net)",
+  "license": "ISC"
+}
