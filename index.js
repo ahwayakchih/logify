@@ -18,6 +18,7 @@ function logify (target, space) {
 		space = '\t';
 	}
 	var spaceLength = space.length * -1;
+	var supportBuffer = typeof Buffer !== 'undefined' && typeof Buffer.from === 'function';
 
 	if (typeof target !== 'object' || target === null) {
 		return target;
@@ -33,10 +34,16 @@ function logify (target, space) {
 		firstSeen = currentPath;
 		seen.set(o, firstSeen);
 
-		var result = '{';
+		var isArray = Array.isArray(o);
+		var keys = Object.keys(o);
+
+		if (!keys || keys.length < 1) {
+			return isArray ? '[]' : '{}';
+		}
+
+		var result = '';
 		margin += space;
 
-		var keys = Object.keys(o);
 		var value = null;
 		var type = '';
 		for (var key of keys) {
@@ -48,7 +55,7 @@ function logify (target, space) {
 				continue;
 			}
 
-			result += `\n${margin}"${key}": `;
+			result += isArray ? `\n${margin}` : `\n${margin}"${key}": `;
 
 			if (type === 'undefined') {
 				result += `"[undefined]",`;
@@ -65,13 +72,21 @@ function logify (target, space) {
 				continue;
 			}
 
+			if (supportBuffer && value instanceof Buffer) {
+				result += `"[Buffer: ${value.toString('hex')}]",`;
+				continue;
+			}
+
 			path.push(key);
 			result += `${toJSON(value)},`;
 			path.pop();
 		}
 
 		margin = margin.slice(0, spaceLength);
-		return result.substring(0, result.length - 1) + `\n${margin}}`;
+		return (isArray ? '[' : '{')
+			+ (result ? result.substring(0, result.length - 1) + `\n${margin}` : '')
+			+ (isArray ? ']' : '}')
+		;
 	}
 
 	return toJSON(target);

@@ -30,6 +30,11 @@ test('logify', t => {
 	o.eight = a;
 	o.nine = function nine () { return 'Hello'; };
 	o.ten = () => 'World!';
+	o.eleven = {
+		f1: function () {},
+		f2: () => {}
+	};
+	o.twelve = Buffer.from('\x42');
 
 	t.strictEqual(logify(o), `{
 	"one": 1,
@@ -45,7 +50,9 @@ test('logify', t => {
 		}
 	},
 	"seven": "[circular: @]",
-	"eight": "[reference: @six.a]"
+	"eight": "[reference: @six.a]",
+	"eleven": {},
+	"twelve": "[Buffer: 42]"
 }`, 'Should convert to JSON');
 	t.ok(JSON.parse(logify(o)), 'Should result in parsable JSON string');
 
