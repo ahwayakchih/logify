@@ -19,7 +19,7 @@ Do not use it to store data! While it's output can be parsed back to objects, re
 ## Installation
 
 ```sh
-npm install logify
+npm install @ahwayakchih/logify
 ```
 
 or:

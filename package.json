@@ -1,6 +1,6 @@
 {
-  "name": "logify",
-  "version": "1.1.0",
+  "name": "@ahwayakchih/logify",
+  "version": "1.1.1",
   "description": "Turn objects/values into JSON string safely, keep result easy on the eyes",
   "main": "index.js",
   "directories": {
@@ -13,7 +13,8 @@
     "tape-catch": "^1.0.6"
   },
   "scripts": {
-    "test": "node test/index.js | tap-diff"
+    "test": "node test/index.js | tap-diff",
+    "publish": "npm publish --access public"
   },
   "keywords": [
     "JSON",
@@ -22,5 +23,13 @@
     "reference"
   ],
   "author": "Marcin Konicki (https://ahwayakchih.neoni.net)",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahwayakchih/logify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ahwayakchih/logify/issues"
+  },
+  "homepage": "https://github.com/ahwayakchih/logify#readme"
 }
