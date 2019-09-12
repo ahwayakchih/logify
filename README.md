@@ -11,7 +11,7 @@ This one strives to be safe (`JSON.stringify` will throw on `bigint` and circula
 - `bigint` values are exported as a string, e.g., `"5n"`,
 - `Buffer` values are exported as a string with it's data shown as hexadecimal, e.g., `"[Buffer: 42]"`.
 
-It's meant to be used for `console.log` output: for a quick check what's going on.
+It's meant to be used for `console.log` output: for a quick check what's going on while debugging.
 
 Do not use it to store data! While it's output can be parsed back to objects, result will differ from the original data.
 
@@ -81,6 +81,11 @@ console.log(logify(o));
   "eleven": {},
   "twelve": "[Buffer: 42]"
 }
+*/
+
+console.log(logify(o, ''));
+/*
+{"one":1,"two":"two","three":"[undefined]","four":null,"five":"5n","six":{"oo":"[circular: @]","a":{"text":"test","circular":"[circular: @six.a]"}},"seven":"[circular: @]","eight":"[reference: @six.a]","eleven":{},"twelve":"[Buffer: 42]"}
 */
 ```
 

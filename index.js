@@ -4,20 +4,27 @@ if (typeof module === 'object') {
 
 /**
  * Stringify target object.
+ * When empty string is passed as `spacer`, output will not be "prettyfied",
+ * so it will look like output from `JSON.stringify(target)`, but with
+ * references/circulars/etc... replaced.
  *
  * @param {object|bigint|number|string|null} target
- * @param {string}                           [space='\t']
+ * @param {string}                           [spacer='\t']
  * @return {string}
  */
-function logify (target, space) {
+function logify (target, spacer) {
 	var margin = '';
 	var path = [];
 	var seen = new WeakMap();
 
-	if (!space) {
-		space = '\t';
+	var marginStep = spacer || (spacer !== '' && '\t') || '';
+	if (marginStep) {
+		margin = '\n';
 	}
-	var spaceLength = space.length * -1;
+
+	var space = marginStep ? ' ' : '';
+
+	var marginStepLength = marginStep.length * -1;
 	var supportBuffer = typeof Buffer !== 'undefined' && typeof Buffer.from === 'function';
 
 	if (typeof target !== 'object' || target === null) {
@@ -42,7 +49,7 @@ function logify (target, space) {
 		}
 
 		var result = '';
-		margin += space;
+		margin += marginStep;
 
 		var value = null;
 		var type = '';
@@ -55,7 +62,7 @@ function logify (target, space) {
 				continue;
 			}
 
-			result += isArray ? `\n${margin}` : `\n${margin}"${key}": `;
+			result += isArray ? margin : `${margin}"${key}":${space}`;
 
 			if (type === 'undefined') {
 				result += `"[undefined]",`;
@@ -82,9 +89,9 @@ function logify (target, space) {
 			path.pop();
 		}
 
-		margin = margin.slice(0, spaceLength);
+		margin = margin.slice(0, marginStepLength);
 		return (isArray ? '[' : '{')
-			+ (result ? result.substring(0, result.length - 1) + `\n${margin}` : '')
+			+ (result ? result.substring(0, result.length - 1) + margin : '')
 			+ (isArray ? ']' : '}')
 		;
 	}

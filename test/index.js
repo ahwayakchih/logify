@@ -36,7 +36,7 @@ test('logify', t => {
 	};
 	o.twelve = Buffer.from('\x42');
 
-	t.strictEqual(logify(o), `{
+	var expected = `{
 	"one": 1,
 	"two": "two",
 	"three": "[undefined]",
@@ -53,8 +53,15 @@ test('logify', t => {
 	"eight": "[reference: @six.a]",
 	"eleven": {},
 	"twelve": "[Buffer: 42]"
-}`, 'Should convert to JSON');
+}`;
+
+	t.strictEqual(logify(o), expected, 'Should convert to JSON');
 	t.ok(JSON.parse(logify(o)), 'Should result in parsable JSON string');
+
+	// Default JSON.stringify outputs no spacing, so compare to that.
+	expected = JSON.stringify(JSON.parse(expected));
+	t.strictEqual(logify(o, ''), expected, 'Should convert to JSON without spacing');
+	t.ok(JSON.parse(logify(o), ''), 'Should result in parsable JSON string without spacing');
 
 	t.end();
 });
