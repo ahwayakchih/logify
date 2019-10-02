@@ -13,8 +13,11 @@ if (typeof module === 'object') {
  * @return {string}
  */
 function logify (target, spacer) {
+	if (typeof target !== 'object' || target === null) {
+		return target;
+	}
+
 	var margin = '';
-	var path = [];
 	var seen = new WeakMap();
 
 	var marginStep = spacer || (spacer !== '' && '\t') || '';
@@ -27,19 +30,18 @@ function logify (target, spacer) {
 	var marginStepLength = marginStep.length * -1;
 	var supportBuffer = typeof Buffer !== 'undefined' && typeof Buffer.from === 'function';
 
-	if (typeof target !== 'object' || target === null) {
-		return target;
-	}
-
-	function toJSON (o) {
-		var currentPath = '@' + path.join('.');
+	/**
+	 * @private
+	 * @param {object} o
+	 * @param {string} currentPath
+	 */
+	function toJSON (o, currentPath = '') {
 		var firstSeen = seen.get(o);
 		if (firstSeen || firstSeen === '') {
-			return `"[${currentPath.startsWith(firstSeen) ? 'circular' : 'reference'}: ${firstSeen}]"`;
+			return `"@${(currentPath.startsWith(firstSeen) && '@') || ''}${firstSeen}"`;
 		}
 
-		firstSeen = currentPath;
-		seen.set(o, firstSeen);
+		seen.set(o, currentPath);
 
 		var isArray = Array.isArray(o);
 		var keys = Object.keys(o);
@@ -58,19 +60,33 @@ function logify (target, spacer) {
 			type = typeof value;
 
 			if (type === 'function') {
-				// result += `${JSON.stringify(value.toString())},`;
 				continue;
 			}
 
 			result += isArray ? margin : `${margin}"${key}":${space}`;
 
+			if (value === Infinity) {
+				result += '"Infinity",';
+				continue;
+			}
+
 			if (type === 'undefined') {
-				result += `"[undefined]",`;
+				result += '"",';
 				continue;
 			}
 
 			if (type === 'bigint') {
 				result += `"${value.toString()}n",`;
+				continue;
+			}
+
+			if (type === 'number' && isNaN(value)) {
+				result += '"NaN",';
+				continue;
+			}
+
+			if (type === 'string') {
+				result += `"<${JSON.stringify(value).substring(1)},`;
 				continue;
 			}
 
@@ -80,20 +96,17 @@ function logify (target, spacer) {
 			}
 
 			if (supportBuffer && value instanceof Buffer) {
-				result += `"[Buffer: ${value.toString('hex')}]",`;
+				result += `"[${value.toString('hex')}]",`;
 				continue;
 			}
 
-			path.push(key);
-			result += `${toJSON(value)},`;
-			path.pop();
+			result += `${toJSON(value, `${currentPath}${(currentPath && '.') || ''}${key}`)},`;
 		}
 
 		margin = margin.slice(0, marginStepLength);
 		return (isArray ? '[' : '{')
 			+ (result ? result.substring(0, result.length - 1) + margin : '')
-			+ (isArray ? ']' : '}')
-		;
+			+ (isArray ? ']' : '}');
 	}
 
 	return toJSON(target);

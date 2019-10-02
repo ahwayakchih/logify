@@ -1,6 +1,6 @@
 {
   "name": "@ahwayakchih/logify",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Turn objects/values into JSON string safely, keep result easy on the eyes",
   "main": "index.js",
   "directories": {
@@ -8,15 +8,30 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "c8": "^5.0.4",
+    "docdash": "^1.1.1",
+    "eslint": "^6.5.1",
+    "eslint-plugin-jsdoc": "^15.9.5",
+    "jsdoc": "^3.6.3",
     "tap-diff": "^0.1.1",
     "tape": "^4.11.0",
     "tape-catch": "^1.0.6"
   },
   "scripts": {
+    "publish": "npm publish --access public",
     "test": "node test/index.js | tap-diff",
-    "publish": "npm publish --access public"
+    "precheckCoverage": "rm -rf ./reports/coverage",
+    "checkCoverage": "c8 --clean --report --reporter text --reporter html --reports-dir reports/coverage node --allow-natives-syntax ./test/index.js",
+    "postcheckCoverage": "echo Coverage results saved to '`reports/coverage/index.html`'",
+    "precheckStyle": "rm -f ./reports/eslint.txt",
+    "checkStyle": "eslint index.js test/** > ./reports/eslint.txt || echo 'ESLint results saved to `reports/eslint.txt`' && cat ./reports/eslint.txt",
+    "predoc": "rm -rf ./reports/jsdoc",
+    "doc": "jsdoc -d reports/jsdoc -c .jsdoc.json --readme README.md index.js",
+    "postdoc": "echo 'Documentation available at `reports/jsdoc/index.html`'",
+    "checkAudit": "npm shrinkwrap && npm audit > ./reports/audit.log || cat ./reports/audit.log; rm npm-shrinkwrap.json"
   },
   "keywords": [
+    "log",
     "JSON",
     "stringify",
     "circular",
@@ -31,5 +46,8 @@
   "bugs": {
     "url": "https://github.com/ahwayakchih/logify/issues"
   },
-  "homepage": "https://github.com/ahwayakchih/logify#readme"
+  "homepage": "https://github.com/ahwayakchih/logify#readme",
+  "files": [
+    "index.js"
+  ]
 }
